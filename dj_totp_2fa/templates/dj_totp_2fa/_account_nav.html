@@ -1,0 +1,6 @@
+{% load i18n %}<nav class="totp-tabs" aria-label="{% trans 'Two-factor settings' %}">
+  <a href="{% url 'dj_totp_2fa:overview' %}"{% if active == 'overview' %} aria-current="page"{% endif %}>{% trans "Overview" %}</a>
+  <a href="{% url 'dj_totp_2fa:devices' %}"{% if active == 'devices' %} aria-current="page"{% endif %}>{% trans "Devices" %}</a>
+  <a href="{% url 'dj_totp_2fa:recovery' %}"{% if active == 'recovery' %} aria-current="page"{% endif %}><span class="totp-long">{% trans "Recovery codes" %}</span><span class="totp-short">{% trans "Codes" %}</span></a>
+  <a href="{% url 'dj_totp_2fa:trusted' %}"{% if active == 'trusted' %} aria-current="page"{% endif %}><span class="totp-long">{% trans "Trusted browsers" %}</span><span class="totp-short">{% trans "Browsers" %}</span></a>
+</nav>

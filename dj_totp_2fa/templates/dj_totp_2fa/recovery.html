@@ -1,0 +1,24 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Recovery codes" %}{% endblock %}
+{% block page_id %}recovery{% endblock %}
+{% block header_extra %}{% include "dj_totp_2fa/_account_nav.html" %}{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  <h1 class="totp-h1">{% trans "Recovery codes" %}</h1>
+  <div class="totp-card">
+    <div class="totp-meter" aria-hidden="true"><span class="totp-meter-fill" data-meter="{{ remaining }}" data-meter-total="{{ recovery_total }}"></span></div>
+    <p class="totp-big"><strong>{{ remaining }}</strong> {% trans "of" %} {{ recovery_total }} {% trans "codes remaining" %}{% if low_codes %} <span class="totp-badge totp-badge-warn">{% trans "Running low" %}</span>{% endif %}</p>
+    <p>{% trans "Recovery codes let you sign in if you lose your device. We only store scrambled versions, so we can't show old codes again. Generating new codes cancels all the old ones." %}</p>
+  </div>
+  <div class="totp-card">
+    <h2 class="totp-h2">{% trans "Generate new codes" %}</h2>
+    {% if error %}<p class="totp-error" role="alert"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ error }}</span></p>{% endif %}
+    {% if enabled %}
+    <form method="post" class="totp-form" data-loading>{% csrf_token %}
+      {% include "dj_totp_2fa/_reauth.html" with prefix="rc" %}
+      <button type="submit" class="totp-btn totp-btn-primary">{% trans "Generate new codes" %}</button>
+    </form>
+    {% else %}<p>{% trans "Turn on two-step verification first." %}</p><a class="totp-btn totp-btn-primary" href="{% url 'dj_totp_2fa:setup' %}">{% trans "Set up" %}</a>{% endif %}
+  </div>
+</section>
+{% endblock %}

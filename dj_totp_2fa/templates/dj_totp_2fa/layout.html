@@ -1,0 +1,22 @@
+{% extends totp_base %}{% load i18n static dj_totp_2fa %}
+{% block title %}{% block page_title %}{% endblock %} | {{ totp_brand }}{% endblock %}
+{% block totp_head %}{% include "dj_totp_2fa/_assets.html" %}{% endblock %}
+{% block totp_content %}
+{% include "dj_totp_2fa/_icons.html" %}
+<div class="totp" data-theme="{{ totp_theme }}" data-page="{% block page_id %}{% endblock %}">
+  <a class="totp-skip" href="#totp-main">{% trans "Skip to content" %}</a>
+  <header class="totp-header">
+    <div class="totp-brand">
+      {% if totp_logo %}<img class="totp-logo" src="{{ totp_logo }}" alt="" width="28" height="28">{% else %}<span class="totp-mark" aria-hidden="true"><svg class="totp-icon"><use href="#i-shield"/></svg></span>{% endif %}
+      <span class="totp-brand-name">{{ totp_brand }}</span>
+    </div>
+    {% block header_extra %}{% endblock %}
+  </header>
+  <main id="totp-main" class="totp-main {% block main_class %}{% endblock %}">
+    {% if messages %}<div class="totp-toasts" role="status" aria-live="polite">{% for message in messages %}<div class="totp-toast totp-toast-{{ message.level_tag|default:'info' }}" data-toast><svg class="totp-icon" aria-hidden="true"><use href="#{% if message.level_tag == 'error' or message.level_tag == 'warning' %}i-alert{% else %}i-check{% endif %}"/></svg><span>{{ message }}</span><button type="button" class="totp-toast-close" data-toast-close aria-label="{% trans 'Dismiss' %}"><svg class="totp-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>{% endfor %}</div>{% endif %}
+    {% block page %}{% endblock %}
+  </main>
+  <footer class="totp-foot">{% blocktrans %}Protected with two-step verification{% endblocktrans %}</footer>
+</div>
+{% endblock %}
+{% block totp_scripts %}{% block vendor_scripts %}{% endblock %}<script src="{% static 'dj_totp_2fa/js/totp.js' %}" defer></script>{% endblock %}

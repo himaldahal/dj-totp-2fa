@@ -1,0 +1,26 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Sign in" %}{% endblock %}
+{% block page_id %}login{% endblock %}
+{% block main_class %}totp-main-center{% endblock %}
+{% block page %}
+<section class="totp-card totp-card-narrow">
+  <div class="totp-hero-icon" aria-hidden="true"><svg class="totp-icon"><use href="#i-user"/></svg></div>
+  <h1 class="totp-title">{% trans "Welcome back" %}</h1>
+  <p class="totp-lead">{% blocktrans with name=totp_brand %}Sign in to {{ name }} to continue.{% endblocktrans %}</p>
+  <form method="post" class="totp-form" data-loading>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<p class="totp-error" role="alert"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ form.non_field_errors.0 }}</span></p>{% endif %}
+    <div class="totp-field">
+      <label for="id_username">{{ form.fields.username.label|default:_("Username") }}</label>
+      <input id="id_username" type="text" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}" autocomplete="username" autocapitalize="none" required autofocus class="totp-input">
+    </div>
+    <div class="totp-field">
+      <label for="id_password">{% trans "Password" %}</label>
+      <input id="id_password" type="password" name="password" autocomplete="current-password" required class="totp-input">
+    </div>
+    <label class="totp-check"><input type="checkbox" name="remember_me" value="1" checked><input type="hidden" name="remember_present" value="1"><span>{% trans "Keep me signed in" %}</span></label>
+    <input type="hidden" name="next" value="{{ next|default:'' }}">
+    <button type="submit" class="totp-btn totp-btn-primary totp-btn-block"><span class="totp-btn-label">{% trans "Continue" %}</span><svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+  </form>
+</section>
+{% endblock %}

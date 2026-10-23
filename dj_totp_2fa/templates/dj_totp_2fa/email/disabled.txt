@@ -1,0 +1,6 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with name=user.get_username %}Hello {{ name }},{% endblocktrans %}
+
+{% blocktrans with site=site %}Two-factor authentication was turned off on your {{ site }} account.{% endblocktrans %}
+
+{% trans "If you did not do this, change your password immediately and contact support." %}
+{% endautoescape %}

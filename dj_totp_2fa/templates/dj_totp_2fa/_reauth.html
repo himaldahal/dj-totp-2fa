@@ -1,0 +1,7 @@
+{% load i18n %}<fieldset class="totp-reauth">
+  <legend>{% trans "Confirm it is you" %}</legend>
+  <p class="totp-hint">{% if password_ok|default:True %}{% trans "Enter your password or a current code from your authenticator app." %}{% else %}{% trans "Enter a current code from your authenticator app." %}{% endif %}</p>
+  {% if password_ok|default:True %}<div class="totp-field"><label for="{{ kind|default:'r' }}{{ prefix }}-password">{% trans "Password" %}</label><input id="{{ kind|default:'r' }}{{ prefix }}-password" name="password" type="password" autocomplete="current-password" class="totp-input"></div>
+  <p class="totp-or"><span>{% trans "or" %}</span></p>{% endif %}
+  <div class="totp-field"><label for="{{ kind|default:'r' }}{{ prefix }}-code">{% trans "Authenticator code" %}</label><input id="{{ kind|default:'r' }}{{ prefix }}-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" maxlength="12" class="totp-input totp-input-code"></div>
+</fieldset>

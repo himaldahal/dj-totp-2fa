@@ -1,0 +1,4 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with name=user.get_username %}Hello {{ name }},{% endblocktrans %}
+
+{% blocktrans with site=site remaining=remaining %}You have only {{ remaining }} recovery code(s) left on your {{ site }} account. Generate a new set in your security settings so you do not get locked out.{% endblocktrans %}
+{% endautoescape %}

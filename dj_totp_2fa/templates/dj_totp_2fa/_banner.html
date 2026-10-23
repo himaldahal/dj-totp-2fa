@@ -1,0 +1,1 @@
+{% load i18n %}{% if show %}<div class="totp-banner" role="note"><span>{% blocktrans count days=days %}Set up two-factor authentication. It becomes mandatory in {{ days }} day.{% plural %}Set up two-factor authentication. It becomes mandatory in {{ days }} days.{% endblocktrans %}</span> <a href="{{ url }}">{% trans "Set up now" %}</a></div>{% endif %}

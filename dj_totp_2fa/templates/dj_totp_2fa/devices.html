@@ -1,0 +1,47 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n dj_totp_2fa %}
+{% block page_title %}{% trans "Devices" %}{% endblock %}
+{% block page_id %}devices{% endblock %}
+{% block header_extra %}{% include "dj_totp_2fa/_account_nav.html" %}{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  <div class="totp-pagehead"><h1 class="totp-h1">{% trans "Your authenticators" %}</h1>
+  {% if not max_devices %}<a class="totp-btn totp-btn-primary" href="{% url 'dj_totp_2fa:add_device' %}"><svg class="totp-icon" aria-hidden="true"><use href="#i-plus"/></svg>{% trans "Add device" %}</a>{% endif %}</div>
+  {% if devices %}
+  <ul class="totp-list">
+    {% for d in devices %}
+    <li class="totp-device">
+      <span class="totp-tile-icon"><svg class="totp-icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+      <div class="totp-device-body">
+        <p class="totp-device-name">{{ d.name }}{% if d.primary %} <span class="totp-badge totp-badge-ok">{% trans "Primary" %}</span>{% endif %}</p>
+        <p class="totp-device-meta">{% trans "Added" %} {{ d.created_at|date:"j M Y" }} &middot; {% if d.last_used_at %}{% trans "Last used" %} {{ d.last_used_at|totp_ago }}{% else %}{% trans "Never used" %}{% endif %}</p>
+      </div>
+      <div class="totp-device-actions">
+        <a class="totp-btn totp-btn-ghost totp-btn-sm" href="{% url 'dj_totp_2fa:rename_device' d.pk %}" data-dialog-open="rename-{{ d.pk }}"><svg class="totp-icon" aria-hidden="true"><use href="#i-pencil"/></svg><span>{% trans "Rename" %}</span></a>
+        <a class="totp-btn totp-btn-danger-ghost totp-btn-sm" href="{% url 'dj_totp_2fa:remove_device' d.pk %}" data-dialog-open="remove-{{ d.pk }}"><svg class="totp-icon" aria-hidden="true"><use href="#i-trash"/></svg><span>{% trans "Remove" %}</span></a>
+      </div>
+      <dialog class="totp-dialog" id="rename-{{ d.pk }}" aria-labelledby="rename-{{ d.pk }}-t">
+        <form method="post" action="{% url 'dj_totp_2fa:rename_device' d.pk %}" class="totp-form">
+          {% csrf_token %}<h2 id="rename-{{ d.pk }}-t" class="totp-h2">{% trans "Rename device" %}</h2>
+          <div class="totp-field"><label for="rn-{{ d.pk }}">{% trans "Name" %}</label><input id="rn-{{ d.pk }}" name="name" class="totp-input" value="{{ d.name }}" maxlength="64" required></div>
+          {% include "dj_totp_2fa/_reauth.html" with kind="rn" prefix=d.pk %}
+          <div class="totp-dialog-actions"><button type="button" class="totp-btn totp-btn-ghost" data-dialog-close>{% trans "Cancel" %}</button><button type="submit" class="totp-btn totp-btn-primary">{% trans "Save" %}</button></div>
+        </form>
+      </dialog>
+      <dialog class="totp-dialog" id="remove-{{ d.pk }}" aria-labelledby="remove-{{ d.pk }}-t">
+        <form method="post" action="{% url 'dj_totp_2fa:remove_device' d.pk %}" class="totp-form">
+          {% csrf_token %}<h2 id="remove-{{ d.pk }}-t" class="totp-h2">{% trans "Remove device" %}</h2>
+          {% if devices|length == 1 %}<p>{% trans "This is your only authenticator. To remove it, turn off two-step verification instead." %}</p>
+          <div class="totp-dialog-actions"><button type="button" class="totp-btn totp-btn-ghost" data-dialog-close>{% trans "Cancel" %}</button><a class="totp-btn totp-btn-danger" href="{% url 'dj_totp_2fa:disable' %}">{% trans "Turn off 2FA" %}</a></div>
+          {% else %}<p>{% blocktrans with name=d.name %}Codes from "{{ name }}" will stop working.{% endblocktrans %}</p>
+          {% include "dj_totp_2fa/_reauth.html" with kind="rm" prefix=d.pk %}
+          <div class="totp-dialog-actions"><button type="button" class="totp-btn totp-btn-ghost" data-dialog-close>{% trans "Cancel" %}</button><button type="submit" class="totp-btn totp-btn-danger">{% trans "Remove" %}</button></div>{% endif %}
+        </form>
+      </dialog>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="totp-card totp-empty"><p>{% trans "No authenticator is set up yet." %}</p><a class="totp-btn totp-btn-primary" href="{% url 'dj_totp_2fa:setup' %}">{% trans "Set one up" %}</a></div>
+  {% endif %}
+</section>
+{% endblock %}

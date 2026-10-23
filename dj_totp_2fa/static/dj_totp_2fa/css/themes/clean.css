@@ -1,0 +1,19 @@
+/* Theme "clean": light, airy, crisp. Also the light half of "auto". */
+.totp[data-theme="clean"], .totp[data-theme="auto"] {
+  --totp-bg: #f4f6fb;
+  --totp-bg-image: radial-gradient(1200px 420px at 50% -120px, #e3ebff 0%, rgba(244, 246, 251, 0) 70%);
+  --totp-surface: #ffffff; --totp-surface-2: #f1f4f9;
+  --totp-border: #e4e8f0; --totp-border-strong: #cfd6e3;
+  --totp-text: #121a2b; --totp-muted: #5a6478; --totp-link: #1d4ed8;
+  --totp-primary: #2457e6; --totp-primary-hover: #1b47c4; --totp-primary-contrast: #ffffff;
+  --totp-primary-soft: #e8efff; --totp-primary-text: #1b47c4;
+  --totp-ring: #7aa2ff; --totp-ring-soft: rgba(36, 87, 230, .16);
+  --totp-input-bg: #ffffff;
+  --totp-danger: #d92d3a; --totp-danger-soft: #fdecee; --totp-danger-text: #a3162a; --totp-danger-border: #f3b9c0;
+  --totp-success-soft: #e3f6ec; --totp-success-text: #11703f;
+  --totp-warning-soft: #fff4dc; --totp-warning-text: #8a5300; --totp-warning-border: #f2d9a0;
+  --totp-shadow-sm: 0 1px 2px rgba(18, 26, 43, .06);
+  --totp-shadow-md: 0 1px 2px rgba(18, 26, 43, .05), 0 10px 30px -12px rgba(30, 50, 100, .18);
+  --totp-shadow-lg: 0 24px 60px -20px rgba(18, 26, 43, .35);
+  --totp-btn-shadow: 0 1px 2px rgba(20, 50, 160, .3), 0 6px 14px -6px rgba(36, 87, 230, .55);
+}

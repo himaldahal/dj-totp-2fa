@@ -1,0 +1,6 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with name=user.get_username %}Hello {{ name }},{% endblocktrans %}
+
+{% blocktrans with site=site browser=browser %}A browser ({{ browser }}) was marked as trusted on your {{ site }} account. It can sign in without a verification code until you revoke it.{% endblocktrans %}
+
+{% trans "If this was not you, revoke trusted browsers in your security settings and change your password." %}
+{% endautoescape %}

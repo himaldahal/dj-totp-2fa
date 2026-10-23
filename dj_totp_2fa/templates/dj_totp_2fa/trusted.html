@@ -1,0 +1,21 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Trusted browsers" %}{% endblock %}
+{% block page_id %}trusted{% endblock %}
+{% block header_extra %}{% include "dj_totp_2fa/_account_nav.html" %}{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  <div class="totp-pagehead"><h1 class="totp-h1">{% trans "Trusted browsers" %}</h1>
+  {% if browsers %}<form method="post" action="{% url 'dj_totp_2fa:trusted_revoke_all' %}">{% csrf_token %}<button class="totp-btn totp-btn-danger-ghost" type="submit">{% trans "Revoke all" %}</button></form>{% endif %}</div>
+  <p class="totp-lead totp-lead-left">{% trans "Browsers you chose to trust skip the code step until they expire. Revoke any you don't recognise." %}</p>
+  {% if browsers %}
+  <ul class="totp-list">{% for b in browsers %}
+    <li class="totp-device">
+      <span class="totp-tile-icon"><svg class="totp-icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
+      <div class="totp-device-body"><p class="totp-device-name">{{ b.label|default:_("Browser") }}{% if b.token_hash == current_hash %} <span class="totp-badge totp-badge-ok">{% trans "This browser" %}</span>{% endif %}</p>
+      <p class="totp-device-meta">{% trans "Trusted" %} {{ b.created_at|date:"j M Y" }}{% if b.ip %} &middot; {{ b.ip }}{% endif %} &middot; {% trans "expires" %} {{ b.expires_at|date:"j M Y" }}</p></div>
+      <form method="post" action="{% url 'dj_totp_2fa:trusted_revoke' b.pk %}">{% csrf_token %}<button type="submit" class="totp-btn totp-btn-danger-ghost totp-btn-sm"><svg class="totp-icon" aria-hidden="true"><use href="#i-trash"/></svg><span>{% trans "Revoke" %}</span></button></form>
+    </li>{% endfor %}
+  </ul>
+  {% else %}<div class="totp-card totp-empty"><p>{% trans "No trusted browsers." %}</p>{% if not enabled %}<p class="totp-hint">{% trans "This feature is turned off." %}</p>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

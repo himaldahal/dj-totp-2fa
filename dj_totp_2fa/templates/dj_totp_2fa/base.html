@@ -1,0 +1,15 @@
+{% load static %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>{% block title %}{{ totp_brand }}{% endblock %}</title>
+{% block totp_head %}{% endblock %}
+</head>
+<body class="totp-body">
+{% block totp_content %}{% endblock %}
+{% block totp_scripts %}{% endblock %}
+</body>
+</html>

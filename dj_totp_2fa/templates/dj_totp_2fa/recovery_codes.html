@@ -1,0 +1,27 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Recovery codes" %}{% endblock %}
+{% block page_id %}recovery-codes{% endblock %}
+{% block header_extra %}{% include "dj_totp_2fa/_account_nav.html" %}{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  {% if first_time %}{% include "dj_totp_2fa/_stepper.html" with current=4 %}{% endif %}
+  <div class="totp-card totp-card-codes" data-gate-root>
+    <h1 class="totp-title totp-title-left">{% trans "Save your recovery codes" %}</h1>
+    <div class="totp-callout totp-callout-warn" role="note"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>{% trans "This is the only time they are shown." %}</strong><span>{% trans "Each code works once and lets you in if you lose your device. Store them somewhere safe, like a password manager." %}</span></div></div>
+    <div class="totp-print" id="totp-print-area">
+      <p class="totp-print-title">{{ totp_brand }}: {% trans "recovery codes" %}</p>
+      <ol class="totp-codes" id="totp-codes" data-codes>
+        {% for code in codes %}<li><code>{{ code }}</code></li>{% endfor %}
+      </ol>
+      <p class="totp-print-note">{% trans "Each code can be used once." %}</p>
+    </div>
+    <div class="totp-actions">
+      <button type="button" class="totp-btn totp-btn-ghost" data-copy-codes data-copy-label="{% trans 'Copied' %}"><svg class="totp-icon" aria-hidden="true"><use href="#i-copy"/></svg><span>{% trans "Copy" %}</span></button>
+      <button type="button" class="totp-btn totp-btn-ghost" data-download-codes data-filename="recovery-codes.txt" data-heading="{{ totp_brand }} {% trans 'recovery codes' %}"><svg class="totp-icon" aria-hidden="true"><use href="#i-download"/></svg><span>{% trans "Download" %}</span></button>
+      <button type="button" class="totp-btn totp-btn-ghost" data-print><svg class="totp-icon" aria-hidden="true"><use href="#i-print"/></svg><span>{% trans "Print" %}</span></button>
+    </div>
+    <label class="totp-check totp-gate" data-gate><input type="checkbox" data-gate-box><span>{% trans "I have saved these codes in a safe place" %}</span></label>
+    <a class="totp-btn totp-btn-primary" href="{{ done_url }}" data-gate-target>{% trans "Continue" %}<svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+{% endblock %}

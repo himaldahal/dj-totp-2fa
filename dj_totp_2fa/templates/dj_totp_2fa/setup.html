@@ -1,0 +1,57 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Set up two-step verification" %}{% endblock %}
+{% block page_id %}setup{% endblock %}
+{% block header_extra %}{% if not forced %}{% include "dj_totp_2fa/_account_nav.html" %}{% endif %}{% endblock %}
+{% block vendor_scripts %}{% load static %}<script src="{% static 'dj_totp_2fa/js/vendor/qrcode.min.js' %}" defer></script>{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  {% if forced %}<div class="totp-callout totp-callout-warn" role="note"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>{% trans "Two-step verification is required" %}</strong><span>{% trans "Your account must be protected with an authenticator app before you can continue." %}</span></div></div>{% endif %}
+  <h1 class="totp-title totp-title-left">{% if first_device %}{% trans "Protect your account" %}{% else %}{% trans "Add another authenticator" %}{% endif %}</h1>
+  <p class="totp-lead totp-lead-left">{% trans "It takes about a minute. You will need your phone or a password manager that supports one-time codes." %}</p>
+  {% include "dj_totp_2fa/_stepper.html" with current=1 %}
+
+  <div class="totp-wizard" data-wizard>
+    <section class="totp-card totp-step" data-step="1" aria-labelledby="step1">
+      <h2 id="step1" class="totp-h2"><span class="totp-num">1</span>{% trans "Get an authenticator app" %}</h2>
+      <p>{% trans "Install any app that supports time-based one-time codes (TOTP). If you already have one, skip ahead." %}</p>
+      <ul class="totp-chips">{% for app in apps %}<li>{{ app }}</li>{% endfor %}</ul>
+      <p class="totp-hint">{% trans "Any app that follows the open RFC 6238 standard works." %}</p>
+      <div class="totp-step-actions"><button type="button" class="totp-btn totp-btn-primary" data-step-next>{% trans "I have an app" %}<svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+    </section>
+
+    <section class="totp-card totp-step" data-step="2" aria-labelledby="step2">
+      <h2 id="step2" class="totp-h2"><span class="totp-num">2</span>{% trans "Scan the QR code" %}</h2>
+      <div class="totp-scan">
+        <div class="totp-qr-wrap">
+          <div class="totp-qr" data-qr data-uri="{{ uri }}" role="img" aria-label="{% trans 'QR code to add this account to your authenticator app' %}"></div>
+          <a class="totp-btn totp-btn-ghost totp-btn-block totp-open-app" href="{{ uri }}">{% trans "Open in authenticator app" %}</a>
+        </div>
+        <div class="totp-manual">
+          <p>{% trans "Can't scan? Enter this key manually in your app:" %}</p>
+          <div class="totp-keybox"><code id="totp-secret" class="totp-key" data-secret="{{ secret }}">{{ secret_grouped }}</code>
+            <button type="button" class="totp-btn totp-btn-ghost totp-btn-icon" data-copy="{{ secret }}" data-copy-label="{% trans 'Copied' %}"><svg class="totp-icon" aria-hidden="true"><use href="#i-copy"/></svg><span>{% trans "Copy" %}</span></button></div>
+          <dl class="totp-meta"><div><dt>{% trans "Account" %}</dt><dd>{{ account }}</dd></div><div><dt>{% trans "Issuer" %}</dt><dd>{{ issuer }}</dd></div><div><dt>{% trans "Type" %}</dt><dd>{% trans "Time based" %}, {{ digits }} {% trans "digits" %}, {{ period }}s, {{ algorithm }}</dd></div></dl>
+          <form method="post" class="totp-inline-form">{% csrf_token %}<input type="hidden" name="action" value="restart"><button type="submit" class="totp-link">{% trans "Generate a new key" %}</button></form>
+        </div>
+      </div>
+      <div class="totp-step-actions"><button type="button" class="totp-btn totp-btn-ghost" data-step-prev>{% trans "Back" %}</button><button type="button" class="totp-btn totp-btn-primary" data-step-next>{% trans "Next" %}<svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+    </section>
+
+    <section class="totp-card totp-step" data-step="3" aria-labelledby="step3">
+      <h2 id="step3" class="totp-h2"><span class="totp-num">3</span>{% trans "Confirm with a code" %}</h2>
+      <p>{% blocktrans with digits=digits %}Enter the {{ digits }}-digit code your app shows now. This proves the app is set up correctly.{% endblocktrans %}</p>
+      <form method="post" class="totp-form" data-loading>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="totp-field"><label for="id_name">{% trans "Name this device" %}</label><input id="id_name" name="name" class="totp-input" maxlength="64" value="{{ default_name }}" autocomplete="off"></div>
+        <div class="totp-otp" data-otp data-digits="{{ digits }}" data-autosubmit="0" data-label>
+          <label for="id_code" class="totp-otp-label">{% trans "Verification code" %}</label>
+          <input id="id_code" name="code" type="text" class="totp-input totp-input-code totp-otp-input" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" maxlength="{{ digits|add:2 }}" required{% if error %} aria-invalid="true" aria-describedby="totp-error"{% endif %}>
+        </div>
+        <p id="totp-error" class="totp-error{% if not error %} is-empty{% endif %}" role="alert" aria-live="assertive" data-error>{% if error %}<svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ error }}</span>{% endif %}</p>
+        <div class="totp-step-actions"><button type="button" class="totp-btn totp-btn-ghost" data-step-prev>{% trans "Back" %}</button><button type="submit" class="totp-btn totp-btn-primary" data-submit><span class="totp-btn-label">{% trans "Confirm and turn on" %}</span><span class="totp-spinner" aria-hidden="true"></span></button></div>
+      </form>
+    </section>
+  </div>
+</section>
+{% endblock %}

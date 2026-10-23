@@ -1,0 +1,63 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Verify" %}{% endblock %}
+{% block page_id %}verify{% endblock %}
+{% block main_class %}totp-main-center{% endblock %}
+{% block page %}
+<section class="totp-card totp-card-narrow" data-verify>
+  <div class="totp-hero-icon{% if locked %} is-danger{% endif %}" aria-hidden="true"><svg class="totp-icon"><use href="#{% if locked %}i-lock{% elif method == 'recovery' %}i-life{% else %}i-phone{% endif %}"/></svg></div>
+  {% if method == "recovery" %}
+    <h1 class="totp-title">{% trans "Use a recovery code" %}</h1>
+    <p class="totp-lead">{% trans "Enter one of the recovery codes you saved when you set up two-step verification. Each code works once." %}</p>
+  {% else %}
+    <h1 class="totp-title">{% if fresh %}{% trans "Confirm it is you" %}{% else %}{% trans "Two-step verification" %}{% endif %}</h1>
+    <p class="totp-lead">{% blocktrans with digits=digits %}Open your authenticator app and enter the {{ digits }}-digit code shown for this account.{% endblocktrans %}</p>
+  {% endif %}
+
+  {% if locked %}
+  <div class="totp-lock" role="alert" data-lock data-retry-after="{{ retry_after }}">
+    <svg class="totp-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+    <div><strong>{% trans "Too many attempts" %}</strong>
+    <span>{% trans "For your security we paused verification. You can try again in" %} <b class="totp-countdown" data-countdown>{{ retry_after }}s</b>.</span></div>
+  </div>
+  {% endif %}
+
+  <form method="post" class="totp-form" action="{% if method == 'recovery' %}{% url 'dj_totp_2fa:verify_recovery' %}{% else %}{% url 'dj_totp_2fa:verify' %}{% endif %}" data-loading{% if locked %} data-locked{% endif %}>
+    {% csrf_token %}
+    <input type="hidden" name="method" value="{{ method }}">
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    {% if honeypot %}<div class="totp-hp" aria-hidden="true"><label>{{ honeypot }}<input type="text" name="{{ honeypot }}" tabindex="-1" autocomplete="off"></label></div>{% endif %}
+    <fieldset{% if locked %} disabled{% endif %} class="totp-fieldset">
+      <legend class="totp-sr">{% trans "Verification code" %}</legend>
+      {% if method == "recovery" %}
+        <div class="totp-field">
+          <label for="id_code">{% trans "Recovery code" %}</label>
+          <input id="id_code" name="code" type="text" class="totp-input totp-input-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="XXXXX-XXXXX" required autofocus{% if error %} aria-invalid="true" aria-describedby="totp-error"{% endif %}>
+        </div>
+      {% else %}
+        <div class="totp-otp" data-otp data-digits="{{ digits }}" data-autosubmit>
+          <label for="id_code" class="totp-otp-label">{% trans "Verification code" %}</label>
+          <input id="id_code" name="code" type="text" class="totp-input totp-input-code totp-otp-input" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" maxlength="{{ digits|add:2 }}" required autofocus{% if error %} aria-invalid="true" aria-describedby="totp-error"{% endif %}>
+        </div>
+      {% endif %}
+      <p id="totp-error" class="totp-error{% if not error %} is-empty{% endif %}" role="alert" aria-live="assertive" data-error>{% if error %}<svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ error }}{% if attempts_left %} {% blocktrans count n=attempts_left %}{{ n }} attempt left.{% plural %}{{ n }} attempts left.{% endblocktrans %}{% endif %}</span>{% endif %}</p>
+      {% if can_trust %}<label class="totp-check"><input type="checkbox" name="trust" value="1"><span>{% blocktrans with days=trust_days %}Trust this browser for {{ days }} days{% endblocktrans %}</span></label>{% endif %}
+      <button type="submit" class="totp-btn totp-btn-primary totp-btn-block" data-submit><span class="totp-btn-label">{% trans "Verify" %}</span><span class="totp-spinner" aria-hidden="true"></span></button>
+    </fieldset>
+  </form>
+
+  <div class="totp-alt">
+    {% if allow_recovery %}
+      {% if method == "recovery" %}<a href="{% url 'dj_totp_2fa:verify' %}">{% trans "Use an authenticator code instead" %}</a>
+      {% else %}<a href="{% url 'dj_totp_2fa:verify_recovery' %}" data-toggle-recovery>{% trans "Use a recovery code" %}</a>{% endif %}
+    {% endif %}
+    <details class="totp-help">
+      <summary>{% trans "Lost your device?" %}</summary>
+      <p>{% trans "If you saved recovery codes, use one of them. Otherwise contact an administrator, who can verify your identity and reset two-step verification for your account." %}</p>
+    </details>
+  </div>
+  {% if kind == "login" %}
+  <form method="post" action="{% url 'dj_totp_2fa:cancel' %}" class="totp-cancel">{% csrf_token %}<button type="submit" class="totp-link">{% trans "Back to sign in" %}</button></form>
+  {% endif %}
+</section>
+{% endblock %}

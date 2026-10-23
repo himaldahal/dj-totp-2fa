@@ -1,0 +1,6 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with name=user.get_username %}Hello {{ name }},{% endblocktrans %}
+
+{% blocktrans with site=site %}There were several failed two-factor verification attempts on your {{ site }} account. For your protection, further attempts are paused for about {{ minutes }} minute(s).{% endblocktrans %}
+
+{% trans "If this was you, you can try again later. If it was not you, change your password now and review your security settings." %}
+{% endautoescape %}

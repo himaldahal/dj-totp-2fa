@@ -1,0 +1,12 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "All set" %}{% endblock %}
+{% block page_id %}done{% endblock %}
+{% block main_class %}totp-main-center{% endblock %}
+{% block page %}
+<section class="totp-card totp-card-narrow totp-center">
+  <div class="totp-success" aria-hidden="true"><svg class="totp-icon"><use href="#i-check"/></svg></div>
+  <h1 class="totp-title">{% trans "You're protected" %}</h1>
+  <p class="totp-lead">{% trans "Two-step verification is on. From now on you'll enter a code from your authenticator app when you sign in." %}</p>
+  <a class="totp-btn totp-btn-primary totp-btn-block" href="{{ next }}">{% trans "Continue" %}<svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+</section>
+{% endblock %}

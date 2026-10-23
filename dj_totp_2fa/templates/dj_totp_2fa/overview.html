@@ -1,0 +1,45 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Two-factor authentication" %}{% endblock %}
+{% block page_id %}overview{% endblock %}
+{% block header_extra %}{% include "dj_totp_2fa/_account_nav.html" %}{% endblock %}
+{% block page %}
+<section class="totp-wide">
+  <h1 class="totp-sr">{% trans "Two-factor authentication" %}</h1>
+  <div class="totp-status totp-card {% if enabled %}is-on{% else %}is-off{% endif %}">
+    <div class="totp-status-icon" aria-hidden="true"><svg class="totp-icon"><use href="#{% if enabled %}i-shield{% else %}i-shield-off{% endif %}"/></svg></div>
+    <div class="totp-status-body">
+      <p class="totp-eyebrow">{% trans "Two-step verification" %}</p>
+      <h2 class="totp-h1">{% if enabled %}{% trans "Your account is protected" %}{% else %}{% trans "Add a second layer of security" %}{% endif %}</h2>
+      <p>{% if enabled %}{% trans "You need a code from your authenticator app to sign in." %}{% else %}{% trans "Use an authenticator app to stop anyone who learns your password from getting in." %}{% endif %}</p>
+      {% if not enabled and grace_until %}<p class="totp-note"><svg class="totp-icon" aria-hidden="true"><use href="#i-clock"/></svg>{% trans "Required by" %} {{ grace_until|date:"j M Y" }}</p>{% elif required and enabled %}<p class="totp-note"><svg class="totp-icon" aria-hidden="true"><use href="#i-lock"/></svg>{% trans "Required for your account" %}</p>{% endif %}
+    </div>
+    <div class="totp-status-actions">
+      <span class="totp-badge {% if enabled %}totp-badge-ok{% else %}totp-badge-off{% endif %}">{% if enabled %}{% trans "On" %}{% else %}{% trans "Off" %}{% endif %}</span>
+      {% if enabled %}<a class="totp-btn totp-btn-ghost" href="{% url 'dj_totp_2fa:devices' %}">{% trans "Manage" %}</a>{% else %}<a class="totp-btn totp-btn-primary" href="{% url 'dj_totp_2fa:setup' %}">{% trans "Turn on" %}<svg class="totp-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>{% endif %}
+    </div>
+  </div>
+
+  {% if enabled %}
+  <div class="totp-grid">
+    <a class="totp-tile" href="{% url 'dj_totp_2fa:devices' %}"><span class="totp-tile-icon"><svg class="totp-icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span class="totp-tile-body"><span class="totp-tile-title">{% trans "Devices" %}</span><span class="totp-tile-sub">{% blocktrans count n=devices|length %}{{ n }} authenticator{% plural %}{{ n }} authenticators{% endblocktrans %}</span></span></a>
+    <a class="totp-tile" href="{% url 'dj_totp_2fa:recovery' %}"><span class="totp-tile-icon"><svg class="totp-icon" aria-hidden="true"><use href="#i-life"/></svg></span><span class="totp-tile-body"><span class="totp-tile-title">{% trans "Recovery codes" %}</span><span class="totp-tile-sub">{{ remaining }} {% trans "remaining" %}</span></span>{% if low_codes %}<span class="totp-badge totp-badge-warn">{% trans "Low" %}</span>{% endif %}</a>
+    <a class="totp-tile" href="{% url 'dj_totp_2fa:trusted' %}"><span class="totp-tile-icon"><svg class="totp-icon" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="totp-tile-body"><span class="totp-tile-title">{% trans "Trusted browsers" %}</span><span class="totp-tile-sub">{{ trusted_count }} {% trans "active" %}</span></span></a>
+  </div>
+  {% endif %}
+
+  {% if recent %}
+  <section class="totp-card" aria-labelledby="recent-h">
+    <h2 id="recent-h" class="totp-h2"><svg class="totp-icon" aria-hidden="true"><use href="#i-activity"/></svg>{% trans "Recent security activity" %}</h2>
+    <ul class="totp-timeline">{% for item in recent %}<li><span class="totp-tl-dot totp-tl-{{ item.e.event }}"></span><span class="totp-tl-text">{{ item.label }}</span><time datetime="{{ item.e.created_at|date:'c' }}">{{ item.e.created_at|date:"j M, H:i" }}</time></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {% if enabled and not required %}
+  <section class="totp-card totp-danger" aria-labelledby="danger-h">
+    <h2 id="danger-h" class="totp-h2">{% trans "Danger zone" %}</h2>
+    <p>{% trans "Turning off two-step verification makes your account easier to take over." %}</p>
+    <a class="totp-btn totp-btn-danger-ghost" href="{% url 'dj_totp_2fa:disable' %}">{% trans "Turn off two-step verification" %}</a>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}

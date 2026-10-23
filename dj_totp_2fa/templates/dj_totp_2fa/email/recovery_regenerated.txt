@@ -1,0 +1,6 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with name=user.get_username %}Hello {{ name }},{% endblocktrans %}
+
+{% blocktrans with site=site %}New recovery codes were generated for your {{ site }} account. The old codes no longer work.{% endblocktrans %}
+
+{% trans "If this was not you, change your password and review your security settings." %}
+{% endautoescape %}

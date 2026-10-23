@@ -1,0 +1,23 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% trans "Turn off two-step verification" %}{% endblock %}
+{% block page_id %}disable{% endblock %}
+{% block main_class %}totp-main-center{% endblock %}
+{% block page %}
+<section class="totp-card totp-card-narrow">
+  <div class="totp-hero-icon is-danger" aria-hidden="true"><svg class="totp-icon"><use href="#i-shield-off"/></svg></div>
+  <h1 class="totp-title">{% trans "Turn off two-step verification?" %}</h1>
+  {% if blocked %}
+    <p class="totp-lead">{% trans "Two-step verification is required for your account, so it can't be turned off." %}</p>
+    <a class="totp-btn totp-btn-primary totp-btn-block" href="{% url 'dj_totp_2fa:overview' %}">{% trans "Back" %}</a>
+  {% else %}
+  <p class="totp-lead">{% trans "Your devices, recovery codes and trusted browsers will be deleted. Anyone with your password will be able to sign in." %}</p>
+  <form method="post" class="totp-form" data-loading>{% csrf_token %}
+    {% if error %}<p class="totp-error" role="alert"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ error }}</span></p>{% endif %}
+    {% include "dj_totp_2fa/_reauth.html" with prefix="dz" %}
+    <label class="totp-check"><input type="checkbox" name="confirm" value="1" required><span>{% trans "Yes, turn off two-step verification" %}</span></label>
+    <button type="submit" class="totp-btn totp-btn-danger totp-btn-block">{% trans "Turn off" %}</button>
+    <a class="totp-link" href="{% url 'dj_totp_2fa:overview' %}">{% trans "Keep it on" %}</a>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

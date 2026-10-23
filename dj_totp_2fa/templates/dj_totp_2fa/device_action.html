@@ -1,0 +1,23 @@
+{% extends "dj_totp_2fa/layout.html" %}{% load i18n %}
+{% block page_title %}{% if action == "rename" %}{% trans "Rename device" %}{% else %}{% trans "Remove device" %}{% endif %}{% endblock %}
+{% block page_id %}device-action{% endblock %}
+{% block main_class %}totp-main-center{% endblock %}
+{% block page %}
+<section class="totp-card totp-card-narrow">
+  <h1 class="totp-title">{% if action == "rename" %}{% trans "Rename device" %}{% else %}{% trans "Remove device" %}{% endif %}</h1>
+  <p class="totp-lead">{{ device.name }}</p>
+  {% if action == "remove" and last_device %}
+    <p>{% trans "This is your only authenticator. To remove it, turn off two-step verification instead." %}</p>
+    <a class="totp-btn totp-btn-danger totp-btn-block" href="{% url 'dj_totp_2fa:disable' %}">{% trans "Turn off 2FA" %}</a>
+  {% else %}
+  <form method="post" class="totp-form" data-loading>
+    {% csrf_token %}
+    {% if error %}<p class="totp-error" role="alert"><svg class="totp-icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ error }}</span></p>{% endif %}
+    {% if action == "rename" %}<div class="totp-field"><label for="id_name">{% trans "Name" %}</label><input id="id_name" name="name" class="totp-input" value="{{ device.name }}" maxlength="64" required></div>{% endif %}
+    {% include "dj_totp_2fa/_reauth.html" %}
+    <button type="submit" class="totp-btn {% if action == 'remove' %}totp-btn-danger{% else %}totp-btn-primary{% endif %} totp-btn-block">{% if action == "rename" %}{% trans "Save" %}{% else %}{% trans "Remove" %}{% endif %}</button>
+    <a class="totp-link" href="{% url 'dj_totp_2fa:devices' %}">{% trans "Cancel" %}</a>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}
