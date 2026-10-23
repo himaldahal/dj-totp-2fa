@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include SECURITY.md
+recursive-include dj_totp_2fa/locale *.po *.mo *.pot
+recursive-include dj_totp_2fa/templates *.html *.txt
+recursive-include dj_totp_2fa/static *.css *.js *.txt *.md

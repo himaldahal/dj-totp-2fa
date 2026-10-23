@@ -1,0 +1,36 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {python: "3.9", django: "3.2.*"}
+          - {python: "3.10", django: "4.2.*"}
+          - {python: "3.11", django: "5.0.*"}
+          - {python: "3.12", django: "5.1.*"}
+          - {python: "3.12", django: "5.2.*"}
+          - {python: "3.13", django: "5.2.*"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ matrix.python }}"}
+      - name: Install
+        run: |
+          pip install "Django==${{ matrix.django }}" cryptography
+          pip install -e .
+      - name: Test
+        run: python runtests.py
+      - name: Test without the optional crypto package
+        run: |
+          pip uninstall -y cryptography
+          python runtests.py
+      - name: Build check
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dj-totp-2fa"
+version = "0.1.0"
+description = "TOTP two-factor authentication for Django (RFC 6238): works with any authenticator app, rate limited, themed, audited."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = ["Django>=3.2"]
+authors = [{ name = "dj-totp-2fa contributors" }]
+keywords = ["django", "2fa", "two-factor", "totp", "otp", "authenticator", "rfc6238", "security", "mfa"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Internet :: WWW/HTTP :: Session",
+]
+
+[project.optional-dependencies]
+crypto = ["cryptography>=3.4"]
+
+[project.urls]
+Source = "https://github.com/himaldahal/dj-totp-2fa"
+Issues = "https://github.com/himaldahal/dj-totp-2fa/issues"
+Changelog = "https://github.com/himaldahal/dj-totp-2fa/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["dj_totp_2fa*"]
+
+[tool.setuptools.package-data]
+dj_totp_2fa = ["templates/**/*.html", "templates/**/*.txt", "static/**/*", "locale/**/*.po", "locale/**/*.mo"]
