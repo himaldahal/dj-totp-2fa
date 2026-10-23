@@ -1,0 +1,12 @@
+{% extends "dj_totp_2fa/base.html" %}{% load static %}
+{% block title %}Acme Cloud{% endblock %}
+{% block totp_head %}<link rel="stylesheet" href="{% static 'dj_totp_2fa/css/base.css' %}"><link rel="stylesheet" href="{% static 'dj_totp_2fa/css/themes/clean.css' %}">{% endblock %}
+{% block totp_content %}
+<div class="totp" data-theme="clean"><main class="totp-main totp-main-center"><section class="totp-card totp-card-narrow">
+  <h1 class="totp-title">Hello, {{ user.username }}</h1>
+  <p class="totp-lead">{% if two_factor.verified %}This page is only visible after the second step.{% else %}You are signed in without a second step.{% endif %}</p>
+  <a class="totp-btn totp-btn-primary" href="{% url 'billing' %}">Billing (asks for a fresh code)</a>
+  <a class="totp-btn totp-btn-ghost" href="{% url 'dj_totp_2fa:overview' %}">Security settings</a>
+  <a class="totp-btn totp-btn-ghost" href="{% url 'admin:index' %}">Django admin</a>
+</section></main></div>
+{% endblock %}
